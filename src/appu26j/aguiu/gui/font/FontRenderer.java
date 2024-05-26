@@ -143,7 +143,7 @@ public class FontRenderer
         return advanceWidth.get(0) * pixelScale;
     }
     
-    private static ByteBuffer streamByteBuffer(InputStream inputStream)
+    public static ByteBuffer streamByteBuffer(InputStream inputStream)
     {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream())
         {
@@ -167,7 +167,7 @@ public class FontRenderer
         }
     }
     
-    private static InputStream get(String location)
+    public static InputStream get(String location)
     {
         return FontRenderer.class.getClassLoader().getResourceAsStream(location);
     }

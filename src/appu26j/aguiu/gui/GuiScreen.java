@@ -19,8 +19,10 @@ public abstract class GuiScreen extends Gui
     }
     
     public abstract void drawScreen(float cursorX, float cursorY);
-    public void mouseClicked(int button, float cursorX, float cursorY) {};
-    public void mouseReleased(int button, float cursorX, float cursorY) {};
-    public void keyPressed(int key) {};
+    public void mouseClicked(int button, float cursorX, float cursorY) {}
+    public void mouseReleased(int button, float cursorX, float cursorY) {}
+    public void mouseScrolled(double xOffset, double yOffset) {}
+    public void keyPressed(int key) {}
+    public void keyReleased(int key) {}
     public void onClose() {}
 }

@@ -3,13 +3,15 @@ package appu26j.aguiu;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
-import java.nio.DoubleBuffer;
+import java.nio.*;
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
 import appu26j.aguiu.gui.GuiScreen;
+import appu26j.aguiu.gui.font.FontRenderer;
 
 public class AgWindow
 {
@@ -87,9 +89,32 @@ public class AgWindow
         {
             public void invoke(long id, int key, int scanCode, int action, int mods)
             {
-                if (action == 1 && screen != null)
+                if (action == 1)
                 {
-                    screen.keyPressed(key);
+                    if (screen != null)
+                    {
+                        screen.keyPressed(key);
+                    }
+                }
+                
+                else
+                {
+                    if (screen != null)
+                    {
+                        screen.keyReleased(key);
+                    }
+                }
+            }
+        });
+        
+        glfwSetScrollCallback(id, new GLFWScrollCallback()
+        {
+            @Override
+            public void invoke(long id, double xOffset, double yOffset)
+            {
+                if (screen != null)
+                {
+                    screen.mouseScrolled(xOffset, yOffset);
                 }
             }
         });
@@ -112,6 +137,23 @@ public class AgWindow
             glfwGetCursorPos(id, cursorX, cursorY);
             AgWindow.cursorX = (float) cursorX.get();
             AgWindow.cursorY = (float) cursorY.get();
+        }
+    }
+    
+    public static void setIcon(String iconLocation)
+    {
+        ByteBuffer icon = FontRenderer.streamByteBuffer(FontRenderer.get(iconLocation));
+        
+        try (GLFWImage.Buffer icons = GLFWImage.malloc(2); MemoryStack stack = MemoryStack.stackPush())
+        {
+            IntBuffer width = stack.mallocInt(1), height = stack.mallocInt(1), component = stack.mallocInt(1);
+            ByteBuffer pixelsOne = STBImage.stbi_load_from_memory(icon, width, height, component, 4),
+            pixelsTwo = STBImage.stbi_load_from_memory(icon, width, height, component, 4);
+            icons.position(0).width(width.get(0)).height(height.get(0)).pixels(pixelsOne)
+            .position(1).width(width.get(0)).height(height.get(0)).pixels(pixelsTwo).position(0);
+            glfwSetWindowIcon(id, icons);
+            STBImage.stbi_image_free(pixelsOne);
+            STBImage.stbi_image_free(pixelsTwo);
         }
     }
     
@@ -167,6 +209,16 @@ public class AgWindow
     public static void setBackgroundColor(int red, int green, int blue, int alpha)
     {
         glClearColor(red / 255F, green / 255F, blue / 255F, alpha / 255F);
+    }
+    
+    public static int getWidth()
+    {
+        return width;
+    }
+    
+    public static int getHeight()
+    {
+        return height;
     }
     
     private static void setupOpenGL()
